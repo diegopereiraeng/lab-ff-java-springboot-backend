@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bezkoder.spring.data.mongodb.model.Tutorial;
 import com.bezkoder.spring.data.mongodb.repository.TutorialRepository;
 
+
 @CrossOrigin(origins = "http://santander.harness-demo.site")
 @RestController
 @RequestMapping("/api")
