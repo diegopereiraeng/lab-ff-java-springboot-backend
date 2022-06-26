@@ -1,9 +1,10 @@
-package com.bezkoder.spring.data.mongodb.controller;
+package io.harness.labff.controller;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import io.harness.cf.client.dto.Target;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bezkoder.spring.data.mongodb.model.Tutorial;
-import com.bezkoder.spring.data.mongodb.repository.TutorialRepository;
+import io.harness.labff.model.Tutorial;
+import io.harness.labff.repository.TutorialRepository;
+import io.harness.labff.services.ffService;
 
 
-@CrossOrigin(origins = "http://santander.harness-demo.site")
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/api")
 public class TutorialController {
@@ -33,19 +35,28 @@ public class TutorialController {
   @GetMapping("/tutorials")
   public ResponseEntity<List<Tutorial>> getAllTutorials(@RequestParam(required = false) String title) {
     try {
-      System.out.println("called");
-      List<Tutorial> tutorials = new ArrayList<Tutorial>();
 
-      if (title == null)
-        tutorialRepository.findAll().forEach(tutorials::add);
-      else
-        tutorialRepository.findByTitleContaining(title).forEach(tutorials::add);
+      Target target = Target.builder().name("Diego Pereira").identifier("diego.pereira@harness.io").build();
+      Boolean tutorialsEnabled = ffService.featureFlagService.boolVariation("API_TUTORIALS_ENABLED", target, true);
+      if (tutorialsEnabled) {
 
-      if (tutorials.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        System.out.println("called");
+        List<Tutorial> tutorials = new ArrayList<Tutorial>();
+
+        if (title == null)
+          tutorialRepository.findAll().forEach(tutorials::add);
+        else
+          tutorialRepository.findByTitleContaining(title).forEach(tutorials::add);
+
+        if (tutorials.isEmpty()) {
+          return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(tutorials, HttpStatus.OK);
+      }else {
+        return new ResponseEntity<>( HttpStatus.FORBIDDEN);
       }
 
-      return new ResponseEntity<>(tutorials, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -65,8 +76,16 @@ public class TutorialController {
   @PostMapping("/tutorials")
   public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
     try {
-      Tutorial _tutorial = tutorialRepository.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false));
-      return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
+      Target target = Target.builder().name("Diego Pereira").identifier("diego.pereira@harness.io").build();
+      Boolean tutorialsEnabled = ffService.featureFlagService.boolVariation("API_TUTORIALS_ENABLED", target, true);
+      if (tutorialsEnabled){
+        Tutorial _tutorial = tutorialRepository.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), false));
+        return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
+      }else {
+        return new ResponseEntity<>( HttpStatus.FORBIDDEN);
+      }
+
+
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -1,4 +1,4 @@
-package com.bezkoder.spring.data.mongodb;
+package io.harness.labff;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

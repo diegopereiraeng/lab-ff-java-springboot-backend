@@ -1,10 +1,10 @@
-package com.bezkoder.spring.data.mongodb.repository;
+package io.harness.labff.repository;
 
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.bezkoder.spring.data.mongodb.model.Tutorial;
+import io.harness.labff.model.Tutorial;
 
 public interface TutorialRepository extends MongoRepository<Tutorial, String> {
   List<Tutorial> findByPublished(boolean published);
