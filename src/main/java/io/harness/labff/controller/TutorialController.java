@@ -24,7 +24,7 @@ import io.harness.labff.repository.TutorialRepository;
 import io.harness.labff.services.ffService;
 
 
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
 public class TutorialController {
